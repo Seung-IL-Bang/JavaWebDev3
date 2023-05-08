@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+  <!-- 출력 -->
+  <h4>[[${list}]]</h4>
+  <hr />
+  <h4 th:text="${list}"></h4>
+
+  <!-- 반복문 -->
+    <!-- 방법.1 반복하고자 하는 태그 내부에 th:each -->
+  <ul>
+      <li th:each="str : ${list}" th:text="${str}"></li>
+  </ul>
+    <!-- 방법.2 별도 태그 th:block 사용 -->
+  <ul>
+      <th:block th:each="str, status : ${list}">
+          <li>[[${status.index}]] -- [[${str}]]</li>
+      </th:block>
+  </ul>
+
+</body>
+</html>
