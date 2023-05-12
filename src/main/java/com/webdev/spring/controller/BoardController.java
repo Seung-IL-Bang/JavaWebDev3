@@ -1,6 +1,7 @@
 package com.webdev.spring.controller;
 
 import com.webdev.spring.dto.BoardDTO;
+import com.webdev.spring.dto.BoardListReplyCountDTO;
 import com.webdev.spring.dto.PageRequestDTO;
 import com.webdev.spring.dto.PageResponseDTO;
 import com.webdev.spring.service.BoardService;
@@ -25,7 +26,8 @@ public class BoardController {
 
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model) {
-        PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+        //PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+        PageResponseDTO<BoardListReplyCountDTO> responseDTO = boardService.listWithReplyCount(pageRequestDTO);
 
         log.info(responseDTO);
 
