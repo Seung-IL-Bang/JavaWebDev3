@@ -55,9 +55,89 @@
       </div> <!-- end card -->
     </div> <!-- end col -->
   </div> <!-- end row -->
-</div>
+
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="my-4">
+        <button class="btn btn-info addReplyBtn">ADD REPLY</button>
+      </div>
+      <ul class="list-group replyList">
+
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col">
+      <ul class="pagination replyPaging">
+
+      </ul>
+    </div>
+  </div>
+
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script src="/js/reply.js"></script>
+
+</div> <!-- end layout fragment:content -->
 
 <script layout:fragment="script" th:inline="javascript">
+    const bno = [[${dto.bno}]];
 
+    const replyList = document.querySelector('.replyList') // 댓글 목록 DOM
+    const replyPaging = document.querySelector('.replyPaging') // 페이지 목록 DOM
+
+    function printList(dtoList) { // 댓글 목록 출력
+        let str = '';
+
+        if (dtoList && dtoList.length > 0) {
+            for (const dto of dtoList) {
+              str += `<li class="list-group-item d-flex replyItem">
+                        <span class="col-2">${dto.rno}</span>
+                        <span class="col-6 data-rno=${dto.rno}">${dto.replyText}</span>
+                        <span class="col-2">${dto.replyer}</span>
+                        <span class="col-2">${dto.reqDate}</span>
+                      </li>`
+            }
+        }
+
+        replyList.innerHTML = str;
+    }
+
+    function printPages(data) { // 페이지 목록 출력
+        // pagination
+        let pageStr = '';
+
+        if (data.prev) {
+            pageStr += `<li class="page-item"><a class="page-link" data-page="${data.start - 1}">PREV</a></li>`
+        }
+
+        for (let i = data.start; i <= data.end; i++) {
+            pageStr += `<li class="page-item ${i == data.page ? "active" : ""}"></li>`
+        }
+
+    }
+
+
+    function printReplies(page, size, goLast) {
+        getList({bno, page, size, goLast})
+            .then(data => {
+                console.log(data)
+            })
+            .catch(e => {
+                console.error(e)
+            });
+    }
+
+    printReplies(1,10) // 무조건 호출
+
+
+
+    // get1(bno).then(data => {
+    //     console.log(data);
+    // }).catch(e => {
+    //     console.error(e);
+    // });
 </script>
 </html>
