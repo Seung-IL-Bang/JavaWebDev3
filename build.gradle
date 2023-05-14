@@ -60,6 +60,9 @@ dependencies {
 
 	// Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
+	// Thumbnailator
+	implementation 'net.coobird:thumbnailator:0.4.19'
 }
 
 tasks.named('test') {
