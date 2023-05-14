@@ -13,6 +13,19 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+  # 파일 업로드에 대한 servlet API 설정
+  servlet:
+    multipart:
+      enabled: true
+      location: /tmp
+      max-request-size: 30MB
+      max-file-size: 10MB
+
+# 컨트롤러에서 필요한 변수의 값
+com:
+  webdev:
+    upload:
+      path: /tmp
 
 # 로그 레벨 설정
 logging:
