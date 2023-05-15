@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 @SpringBootTest
@@ -124,4 +125,21 @@ public class BoardRepositoryTest {
 
         result.getContent().forEach(log::info);
     }
+
+    @Test
+    public void testInsertWithImages() {
+        Board board = Board.builder()
+                .title("Image Test")
+                .content("첨부파일 테스트")
+                .writer("tester")
+                .build();
+
+        for (int i = 0; i < 3; i++) {
+            board.addImage(UUID.randomUUID().toString(), "file" + i + ".jpg");
+        }
+
+        boardRepository.save(board);
+    }
+
+    
 }
