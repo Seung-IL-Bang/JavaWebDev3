@@ -1,6 +1,7 @@
 package com.webdev.spring.repository;
 
 import com.webdev.spring.domain.Board;
+들import com.webdev.spring.domain.BoardImage;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +25,9 @@ public class BoardRepositoryTest {
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private ReplyRepository replyRepository;
 
     @Test
     @DisplayName("save 동작")
@@ -141,5 +147,82 @@ public class BoardRepositoryTest {
         boardRepository.save(board);
     }
 
-    
+    @Test
+    @Transactional // no session 에러 방지를 위한 트랜잭션 추가
+    public void testReadWithImages() {
+        // 반드시 존재하는 bno 로 확인
+        Optional<Board> result = boardRepository.findById(1L); // 첫 번째 select
+
+        Board board = result.orElseThrow();
+
+        log.info(board);
+        log.info("---------------");
+        log.info(board.getImageSet()); // 두 번째 select
+    }
+
+    // @EntityGraph 를 통해 Board 와 함께 로딩할 속성(BoardImage)을 명시 -> Join 처리를 통해 한 번의 select 만 이루어짐
+    @Test
+    public void testReadWithImages2() {
+        // 반드시 존재하는 bno 로 확인
+        Optional<Board> result = boardRepository.findByIdWithImages(1L);
+
+        Board board = result.orElseThrow();
+
+        log.info(board);
+        log.info("---------------");
+        for (BoardImage boardImage : board.getImageSet()) {
+            log.info(boardImage);
+        }
+    }
+
+    @Test
+    @Commit
+    @Transactional
+    public void testModifyImages() {
+        Optional<Board> result = boardRepository.findByIdWithImages(1L);
+
+        Board board = result.orElseThrow();
+
+        // 기존의 첨부파일들 삭제
+        board.clearImages();
+
+        // 새로운 첨부파일들 추가
+        for (int i = 0; i < 2; i++) {
+            board.addImage(UUID.randomUUID().toString(), "updatefile" + i + ".jpg");
+        }
+
+        boardRepository.save(board);
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    public void testRemoveAll() {
+
+        Long bno = 1L;
+
+        replyRepository.deleteByBoard_Bno(bno);
+
+        boardRepository.deleteById(bno);
+    }
+
+    @Test
+    public void testInsertAll() {
+        for (int i = 1; i <= 100; i++) {
+            Board board = Board.builder()
+                    .title("Title_" + i)
+                    .content("Content_" + i)
+                    .writer("Writer_" + i)
+                    .build();
+
+            for (int j = 0; j < 3; j++) {
+                if (i % 5 == 0) {
+                    continue;
+                }
+                board.addImage(UUID.randomUUID().toString(), + i + "_file_" + j + ".jpg");
+            }
+
+            boardRepository.save(board);
+        }
+    }
 }
