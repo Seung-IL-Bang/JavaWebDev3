@@ -1,7 +1,7 @@
 package com.webdev.spring.repository;
 
 import com.webdev.spring.domain.Board;
-들import com.webdev.spring.domain.BoardImage;
+import com.webdev.spring.domain.BoardImage;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
