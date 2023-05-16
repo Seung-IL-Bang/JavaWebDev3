@@ -2,6 +2,7 @@ package com.webdev.spring.repository;
 
 import com.webdev.spring.domain.Board;
 import com.webdev.spring.domain.BoardImage;
+import com.webdev.spring.dto.BoardListAllDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -224,5 +225,21 @@ public class BoardRepositoryTest {
 
             boardRepository.save(board);
         }
+    }
+
+    @Test
+    @Transactional
+    public void testSearchImageReplyCount() {
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("bno").descending());
+
+        //boardRepository.searchWithAll(null, null, pageable);
+
+        Page<BoardListAllDTO> result = boardRepository.searchWithAll(null, null, pageable);
+
+        log.info("----------------------");
+        log.info(result.getTotalElements());
+
+        result.getContent().forEach(boardListAllDTO -> log.info(boardListAllDTO));
     }
 }

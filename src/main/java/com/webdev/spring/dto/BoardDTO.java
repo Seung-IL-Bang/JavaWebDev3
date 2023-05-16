@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Getter
@@ -28,4 +29,7 @@ public class BoardDTO {
     private LocalDateTime reqDate;
 
     private LocalDateTime modDate;
+
+    // 첨부파일의 이름들
+    private List<String> fileNames;
 }
