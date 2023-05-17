@@ -136,7 +136,7 @@
         e.preventDefault()
         e.stopPropagation()
 
-        formObj.action = `/board/modify${link}`
+        formObj.action = `/board/modify?${link}`
 
         // 첨부파일을 <input type=hidden ... > 으로 추가
         appendFileData()
@@ -149,8 +149,8 @@
     }, false)
 
     // Remove button event Handling
-    document.querySelector(".removeBtn").addEventListener("click", function (ev) {
-        e.preauthorizeBasic()
+    document.querySelector(".removeBtn").addEventListener("click", function (e) {
+        e.preventDefault()
         e.stopPropagation()
 
         // 화면에 보이는 파일들을 form 태그에 추가
