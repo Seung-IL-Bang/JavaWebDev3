@@ -24,7 +24,12 @@ public class CustomSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("--------------------------------Configure--------------------------------");
 
-        http.formLogin(); // 로그인 화면에서 로그인을 진행한다는 설정 (로그인 화면 활성화)
+        http
+                .formLogin() // 로그인 화면에서 로그인을 진행한다는 설정 (로그인 화면 활성화)
+                .loginPage("/member/login") // formLogin() 에 대해 loginPage() 를 지정하면 로그인이 필요한 경우에 원하는 경로로 자동 리다이렉트 된다. (기본 로그인 화면 비활성화)
+                .and()
+                .csrf().disable(); // CSRF 토큰 비활성화
+
 
         return http.build();
     }
