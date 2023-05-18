@@ -63,6 +63,9 @@ dependencies {
 
 	// Thumbnailator
 	implementation 'net.coobird:thumbnailator:0.4.19'
+
+	// Spring Web Security
+	implementation 'org.springframework.boot:spring-boot-starter-security:3.0.4'
 }
 
 tasks.named('test') {

@@ -30,8 +30,8 @@ com:
 # 로그 레벨 설정
 logging:
   level:
-    org:
-      springframework: info
-      webdev: debug
+    org.springframework: info
+    org.springframework.security: trace # Security filter 를 자세히 들여다 보기 위한 설정
+    webdev: debug
 
 
