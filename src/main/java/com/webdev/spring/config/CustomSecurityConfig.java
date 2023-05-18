@@ -1,10 +1,12 @@
 package com.webdev.spring.config;
 
+import com.webdev.spring.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +14,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 @Log4j2
 @Configuration
@@ -19,16 +25,24 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class CustomSecurityConfig {
 
+    private final DataSource dataSource;
+    @Lazy private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("--------------------------------Configure--------------------------------");
 
-        http
-                .formLogin() // 로그인 화면에서 로그인을 진행한다는 설정 (로그인 화면 활성화)
-                .loginPage("/member/login") // formLogin() 에 대해 loginPage() 를 지정하면 로그인이 필요한 경우에 원하는 경로로 자동 리다이렉트 된다. (기본 로그인 화면 비활성화)
-                .and()
-                .csrf().disable(); // CSRF 토큰 비활성화
+        http.formLogin() // 로그인 화면에서 로그인을 진행한다는 설정 (로그인 화면 활성화)
+                .loginPage("/member/login"); // formLogin() 에 대해 loginPage() 를 지정하면 로그인이 필요한 경우에 원하는 경로로 자동 리다이렉트 된다. (기본 로그인 화면 비활성화)
+
+        http.csrf().disable(); // CSRF 토큰 비활성화
+
+        // 자동 로그인 remember-me 기능
+        http.rememberMe()
+                .key("12345678") // 쿠키의 값을 인코딩하기 위한 키
+                .tokenRepository(persistentTokenRepository())
+                .userDetailsService(userDetailsService)
+                .tokenValiditySeconds(60*60*24*30); // 30일 유효기간
 
 
         return http.build();
@@ -47,6 +61,13 @@ public class CustomSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // 해시 알고리즘으로 패스워드 암호화; 같은 문자열이라도 매번 해시 처리된 결과가 다르다.
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
+        repo.setDataSource(dataSource);
+        return repo;
     }
 
 }
