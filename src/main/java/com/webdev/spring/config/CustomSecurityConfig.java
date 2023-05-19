@@ -1,6 +1,7 @@
 package com.webdev.spring.config;
 
 import com.webdev.spring.security.CustomUserDetailsService;
+import com.webdev.spring.security.handler.Custom403Handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -44,6 +46,8 @@ public class CustomSecurityConfig {
                 .userDetailsService(userDetailsService)
                 .tokenValiditySeconds(60*60*24*30); // 30일 유효기간
 
+        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler()); // 403 Handler 추가
+
 
         return http.build();
     }
@@ -70,6 +74,11 @@ public class CustomSecurityConfig {
         return repo;
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new Custom403Handler();
+    }
+
 }
 
 // filterChain
@@ -84,3 +93,8 @@ public class CustomSecurityConfig {
 
 // passwordEncoder()
 // : UserDetailsService 가 정상적으로 동작하려면 SecurityConfig 클래스에 PasswordEncoder 를 @Bean 으로 지정하고 주입해줘야 한다.
+
+// persistentTokenRepository
+// : remember-me 기능 사용시 로그인 유저의 정보를 저장하기 위한 repository
+
+//
