@@ -19,8 +19,8 @@ public class Member extends BaseEntity{
 
     private String mpw;
     private String email;
-    private boolean del;
-    private boolean social;
+    private boolean del; // 탈퇴 여부
+    private boolean social; // 소셜 로그인 자동 회원 가입 여부
 
     @ElementCollection(fetch = FetchType.LAZY) // 컬렉션을 데이터베이스 테이블에 매핑하는 데 사용 -> 해당 필드의 테이블만 따로 생성된다.
     @Builder.Default
