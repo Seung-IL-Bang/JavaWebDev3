@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
       layout:decorate="~{layout/basic.html}">
 <head>
   <title>Board Read</title>
@@ -41,12 +42,12 @@
                    readonly/>
           </div>
 
-          <div class="my-4">
+          <div class="my-4" th:with="user=${#authentication.principal}">
             <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
               <a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
                 <button type="button" class="btn btn-primary">List</button>
               </a>
-              <a th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
+              <a th:if="${user != null && user.username == dto.writer}" th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
                 <button type="button" class="btn btn-secondary">Modify</button>
               </a>
             </div>
@@ -93,9 +94,9 @@
             <span class="input-group-text">Reply Text</span>
             <input type="text" class="form-control replyText"/>
           </div>
-          <div class="input-group mb-3">
+          <div class="input-group mb-3" th:with="user=${#authentication.principal}">
             <span class="input-group-text">Replyer</span>
-            <input type="text" class="form-control replyer"/>
+            <input type="text" class="form-control replyer" th:value="${user.username}" readonly/>
           </div>
         </div> <!-- end modal-body -->
         <div class="modal-footer">
@@ -136,6 +137,9 @@
 </div> <!-- end layout fragment:content -->
 
 <script layout:fragment="script" th:inline="javascript">
+
+    const currentUser = [[${#authentication.principal.username}]]
+
     const bno = [[${dto.bno}]];
 
     const replyList = document.querySelector('.replyList') // 댓글 목록 DOM
@@ -208,6 +212,8 @@
     const removeBtn = document.querySelector(".removeBtn")
     const closeModifyBtn = document.querySelector(".closeModifyBtn")
 
+    let hasAuth = false // 댓글의 작성자와 currentUser 의 일치 여부
+
     // 특정 댓글 클릭 시 modifyModal 활성화 Handler
     replyList.addEventListener("click", function (e) {
         e.preventDefault()
@@ -231,6 +237,8 @@
                 replyHeader.innerHTML = reply.rno
                 modifyText.value = reply.replyText
                 modifyModal.show()
+
+                hasAuth = currentUser === reply.replyer // 댓글의 작성자와 현재 사용자 일치 여부 확인
             }).catch(e => {
                 alert('error: 댓글 수정')
         });
@@ -238,11 +246,18 @@
 
     // modifyBtn 댓글 수정
     modifyBtn.addEventListener("click", function (e) {
+
+        if (!hasAuth) {
+            alert("댓글 작성자만 수정이 가능합니다.")
+            modifyModal.hide()
+            return
+        }
+
         const replyObj = {
             bno : bno,
             rno : replyHeader.innerHTML,
             replyText : modifyText.value
-        }
+        };
 
         modifyReply(replyObj)
             .then(result => {
@@ -262,6 +277,13 @@
 
     // removeBtn 댓글 삭제
     removeBtn.addEventListener("click", function (e) {
+
+        if (!hasAuth) {
+            alert("댓글 작성자만 삭제가 가능합니다.")
+            modifyModal.hide()
+            return
+        }
+
         removeReply(replyHeader.innerHTML)
             .then(result => {
                 alert(result.rno + '번 댓글이 삭제되었습니다.')
