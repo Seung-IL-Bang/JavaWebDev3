@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 public class CustomSecurityConfig {
 
     private final DataSource dataSource;
-    @Lazy private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
