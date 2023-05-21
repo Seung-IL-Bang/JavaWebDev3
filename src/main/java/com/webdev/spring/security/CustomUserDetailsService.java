@@ -22,11 +22,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException { // 일반 로그인 처리
 
         log.info("loadUserByUsername: " + username);
 
-        Optional<Member> result = memberRepository.getWithRoles(username);
+        Optional<Member> result = memberRepository.getWithRoles(username); // 소셜 가입자는 이메일로 일반 로그인 불가능
 
         if (result.isEmpty()) {
             throw new UsernameNotFoundException("username not found ...");
