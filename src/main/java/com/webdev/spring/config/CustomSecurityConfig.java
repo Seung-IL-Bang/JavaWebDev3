@@ -2,13 +2,12 @@ package com.webdev.spring.config;
 
 import com.webdev.spring.security.CustomUserDetailsService;
 import com.webdev.spring.security.handler.Custom403Handler;
+import com.webdev.spring.security.handler.CustomSocialLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -16,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -48,6 +48,9 @@ public class CustomSecurityConfig {
 
         http.exceptionHandling().accessDeniedHandler(accessDeniedHandler()); // 403 Handler 추가
 
+        http.oauth2Login().loginPage("/member/login") // OAuth2 로그인 사용 설정
+                .successHandler(authenticationSuccessHandler()); // OAuth2 성공 시 처리 핸들러
+
 
         return http.build();
     }
@@ -79,6 +82,10 @@ public class CustomSecurityConfig {
         return new Custom403Handler();
     }
 
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomSocialLoginSuccessHandler(passwordEncoder());
+    }
 }
 
 // filterChain
@@ -97,4 +104,5 @@ public class CustomSecurityConfig {
 // persistentTokenRepository
 // : remember-me 기능 사용시 로그인 유저의 정보를 저장하기 위한 repository
 
-//
+// authenticationSuccessHandler
+// : OAuth2 소셜 로그인 성공 시 처리할 핸들러 추가
