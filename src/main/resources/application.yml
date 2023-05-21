@@ -20,6 +20,27 @@ spring:
       location: /tmp
       max-request-size: 30MB
       max-file-size: 10MB
+  # 카카오 OAuth2 연결 설정
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize # 인가 코드 발행
+            user-name-attribute: id
+            token-uri: https://kauth.kakao.com/oauth/token # Access Token 발행
+            user-info-uri: https://kapi.kakao.com/v2/user/me # 사용자 정보 발행
+        registration:
+          kakao:
+            client-name: kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-authentication-method: POST
+            scope:
+              - profile_nickname
+              - account_email
 
 # 컨트롤러에서 필요한 변수의 값
 com:
