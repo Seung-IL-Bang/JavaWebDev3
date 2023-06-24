@@ -42,7 +42,7 @@ dependencies {
 
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1'
 
 	// QueryDsl; SpringBoot 3.0 이상부터 (javax -> jakarta) 라이브러리명 변경 사항을 반영해줘야 QClass 가 생성된다.
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
